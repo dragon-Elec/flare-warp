@@ -19,7 +19,7 @@ class CommandFailedError(WarpCLIError):
     indicating a failure.
     """
 
-    def __init__(self, command: list, return_code: int, stdout: str, stderr: str):
+    def __init__(self, command: list[str], return_code: int, stdout: str, stderr: str):
         """
         Initializes the exception with detailed information from the failed command.
 
