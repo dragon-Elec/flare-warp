@@ -14,6 +14,7 @@ from typing import final
 from .exceptions import WarpCLIError, CommandFailedError
 from .models import WarpStatus, WarpStats
 from .types import DualOutput
+from .controllers.dns import DnsController
 
 
 # Using @final ensures no other class can inherit from WarpClient.
@@ -36,8 +37,8 @@ class WarpClient:
                            Defaults to "warp-cli", assuming it's in the system's PATH.
         """
         self.warp_cli_path = warp_cli_path
-        # In the future, controllers will be initialized here, for example:
-        # self.dns = DnsController(self)
+        # Initialize controllers for command groups.
+        self.dns = DnsController(self)
 
     def _run_command(self, command_parts: list[str], expect_json: bool = True) -> str:
         """
@@ -101,7 +102,9 @@ class WarpClient:
         try:
             json_data = json.loads(raw_output)
             model = WarpStatus(
-                status=json_data.get("status", "Unknown"), raw_data=json_data
+                status=json_data.get("status", "Unknown"),
+                reason=json_data.get("reason"), # .get() returns None if key is missing
+                raw_data=json_data
             )
             return DualOutput(model=model, raw_output=raw_output)
         except json.JSONDecodeError:
