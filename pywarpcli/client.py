@@ -7,14 +7,17 @@ This module contains the main WarpClient class, which is the primary
 interface for interacting with the `warp-cli` command-line tool.
 """
 
+from __future__ import annotations
 import subprocess
 import json
-from typing import final
+from typing import final, cast, TYPE_CHECKING, Any
 
 from .exceptions import WarpCLIError, CommandFailedError
 from .models import WarpStatus, WarpStats
 from .types import DualOutput
-from .controllers.dns import DnsController
+
+if TYPE_CHECKING:
+    from .controllers.dns import DnsController
 
 
 # Using @final ensures no other class can inherit from WarpClient.
@@ -28,6 +31,8 @@ class WarpClient:
     the output in both raw and structured (parsed) formats.
     """
 
+    dns: DnsController
+
     def __init__(self, warp_cli_path: str = "warp-cli"):
         """
         Initializes the WarpClient.
@@ -37,7 +42,9 @@ class WarpClient:
                            Defaults to "warp-cli", assuming it's in the system's PATH.
         """
         self.warp_cli_path = warp_cli_path
-        # Initialize controllers for command groups.
+        # Defer controller import to avoid circular dependencies
+        from .controllers.dns import DnsController
+
         self.dns = DnsController(self)
 
     def _run_command(self, command_parts: list[str], expect_json: bool = True) -> str:
@@ -100,11 +107,13 @@ class WarpClient:
         """
         raw_output = self._run_command(["status"])
         try:
-            json_data = json.loads(raw_output)
+            # Tell the linter to treat the output of json.loads as a dictionary
+            json_data = cast(dict[str, Any], json.loads(raw_output))
+
             model = WarpStatus(
                 status=json_data.get("status", "Unknown"),
-                reason=json_data.get("reason"), # .get() returns None if key is missing
-                raw_data=json_data
+                reason=json_data.get("reason"),  # .get() returns None if key is missing
+                raw_data=json_data,
             )
             return DualOutput(model=model, raw_output=raw_output)
         except json.JSONDecodeError:

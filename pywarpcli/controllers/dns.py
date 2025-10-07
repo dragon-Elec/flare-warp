@@ -7,7 +7,7 @@ This module contains the DnsController class for managing `warp-cli dns` subcomm
 """
 
 import json
-from typing import Any
+from typing import Any, cast
 
 from .base import BaseController
 from ..exceptions import WarpCLIError
@@ -36,7 +36,7 @@ class DnsController(BaseController):
         try:
             # For now, we'll use a generic dictionary as the model for DNS stats.
             # We can create a dedicated dataclass later if needed.
-            model = json.loads(raw_output)
+            model = cast(dict[str, Any], json.loads(raw_output))
             return DualOutput(model=model, raw_output=raw_output)
         except json.JSONDecodeError:
             raise WarpCLIError(
