@@ -8,7 +8,7 @@ warp-cli commands in a structured, predictable way.
 """
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
 # A 'dataclass' is a class designed to be a clean container for data.
 # It automatically handles basic methods for you, making the code concise.
@@ -21,6 +21,7 @@ class WarpStatus:
     """
 
     status: str
+    reason: Optional[str] = None
     # We also store the full, raw JSON response. This is useful for debugging
     # and for accessing new fields if warp-cli adds them in the future,
     # without needing to update our model immediately.
