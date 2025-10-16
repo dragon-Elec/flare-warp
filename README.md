@@ -102,7 +102,7 @@ python3 main.py
 This project is in active development and contributions are highly welcome!
 
 *   **Roadmap:** Our immediate focus is on perfecting the core features: connection, stats, and DNS management. Future plans include full registration management and handling for privileged commands.
-*   **Contribute:** Fork the repo, create a feature branch, and submit a pull request. For a deep dive into the architecture and development plan, see the [**Project Blueprint**](FlareWARP.md).
+*   **Contribute:** Fork the repo, create a feature branch, and submit a pull request. For a deep dive into the architecture and development plan, see the [**Project Blueprint**](FlareWARP BP.md).
 *   **Feedback:** Found a bug or have a feature request? Please [open an issue](https://github.com/dragon-Elec/flare-warp/issues)!
 
 ## License
