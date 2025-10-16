@@ -33,6 +33,7 @@ class WarpClient:
     """
 
     dns: DnsController
+    registration: RegistrationController
 
     def __init__(self, warp_cli_path: str = "warp-cli"):
         """
@@ -45,8 +46,10 @@ class WarpClient:
         self.warp_cli_path = warp_cli_path
         # Defer controller import to avoid circular dependencies
         from .controllers.dns import DnsController
+        from .controllers.registration import RegistrationController
 
         self.dns = DnsController(self)
+        self.registration = RegistrationController(self)
 
     def _run_command(self, command_parts: list[str], expect_json: bool = True) -> str:
         """
