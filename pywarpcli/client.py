@@ -18,6 +18,7 @@ from .types import DualOutput
 
 if TYPE_CHECKING:
     from .controllers.dns import DnsController
+    from .controllers.registration import RegistrationController
 
 
 # Using @final ensures no other class can inherit from WarpClient.
