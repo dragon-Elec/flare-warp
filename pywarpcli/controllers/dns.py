@@ -62,5 +62,10 @@ class DnsController(BaseController):
         if mode not in valid_modes:
             raise WarpCLIError(f"Invalid mode '{mode}'. Must be one of: {', '.join(valid_modes)}")
 
-        raw_output = self._client._run_command(["dns", "families", mode], expect_json=False)
-        return DualOutput(model=raw_output, raw_output=raw_output)
+        raw_output = self._client._run_command(["dns", "families", mode])
+        try:
+            json_data = cast(dict[str, Any], json.loads(raw_output))
+            status = json_data.get("status", "Unknown")
+            return DualOutput(model=status, raw_output=raw_output)
+        except json.JSONDecodeError:
+            raise WarpCLIError(f"Failed to parse JSON from 'dns families {mode}'. Raw: {raw_output}")

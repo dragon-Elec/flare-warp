@@ -49,10 +49,14 @@ class RegistrationController(BaseController):
         Gets the name of the current Teams organization.
 
         Corresponds to `warp-cli registration organization`.
-        This command does not return JSON.
         """
-        raw_output = self._client._run_command(["registration", "organization"], expect_json=False)
-        return DualOutput(model=raw_output, raw_output=raw_output)
+        raw_output = self._client._run_command(["registration", "organization"])
+        try:
+            json_data = cast(dict[str, Any], json.loads(raw_output))
+            org = json_data.get("organization", "")
+            return DualOutput(model=org, raw_output=raw_output)
+        except json.JSONDecodeError:
+            raise WarpCLIError(f"Failed to parse JSON from 'registration organization'. Raw: {raw_output}")
 
     def get_devices(self) -> DualOutput[list[Device]]:
         """
