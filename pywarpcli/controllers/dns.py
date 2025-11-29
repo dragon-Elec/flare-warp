@@ -44,3 +44,23 @@ class DnsController(BaseController):
             raise WarpCLIError(
                 f"Failed to parse JSON from 'dns stats' command. Raw output: {raw_output}"
             )
+
+    def set_families(self, mode: str) -> DualOutput[str]:
+        """
+        Sets the DNS families mode.
+
+        Args:
+            mode: One of 'off', 'malware', or 'full'.
+
+        Returns:
+            A DualOutput object where the model is the raw success message.
+        
+        Raises:
+            WarpCLIError: If an invalid mode is provided.
+        """
+        valid_modes = ["off", "malware", "full"]
+        if mode not in valid_modes:
+            raise WarpCLIError(f"Invalid mode '{mode}'. Must be one of: {', '.join(valid_modes)}")
+
+        raw_output = self._client._run_command(["dns", "families", mode], expect_json=False)
+        return DualOutput(model=raw_output, raw_output=raw_output)

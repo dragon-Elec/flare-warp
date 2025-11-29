@@ -64,7 +64,6 @@ class RegistrationInfo:
     """
     id: str
     account_type: str
-    device_name: str
     raw_data: dict[str, Any] = field(repr=False, default_factory=dict)
 
 
@@ -79,6 +78,17 @@ class Device:
     active: bool
     # 'is_this_device' is a useful flag to know which entry is the current machine
     is_this_device: bool
+    raw_data: dict[str, Any] = field(repr=False, default_factory=dict)
+
+
+@dataclass
+class FullRegistrationInfo:
+    """
+    Represents a combination of registration and device information.
+    """
+    id: str
+    account_type: str
+    device_name: str
     raw_data: dict[str, Any] = field(repr=False, default_factory=dict)
 
 
