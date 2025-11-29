@@ -15,7 +15,7 @@
 *   **Clear Separation of Layers:** Each layer has a distinct responsibility and should not contain logic belonging to another. if there is somthing that can be used across between all py files and functions it can be placed in its appopriate place maybe in lib/pywarp or outside
 *   **Pragmatic Controller Pattern:** In `pywarpcli`, create controller files only for major, multi-command groups (e.g., `dns`, `registration`). Simple, standalone commands (e.g., `connect`, `status`) should be implemented as direct methods within the main `WarpClient` class withen explixity told commented area.
 *   **Structured `DualOutput` API:** Library functions will return a single `DualOutput` object (a generic dataclass). This object cleanly encapsulates both the structured data model (`.model`) and the raw CLI output (`.raw_output`), ensuring a readable, type-safe, and unambiguous API.
-*   **Focus on Core Features (Phase 1):** Initial development will focus on essential features: connection, status, stats, and DNS family settings.
+*   **Focus on Core Features (Phase 1):** Initial development will focus on essential features: connection, status, stats, DNS family settings, and Registration.
 *   **Synchronous Library, Asynchronous GUI:** The `pywarpcli` library methods will be synchronous (blocking). The application layer is responsible for calling these methods in background threads to keep the UI responsive.
 * **Modern Python Syntax:** The project will use modern Python (3.9+) conventions, including built-in generic types (`list[str]`, `dict[str, Any]`) for all type hints.
 ### 3. Phase 1: Core Library & Application Structure
@@ -85,12 +85,7 @@ The `workflows/` directory contains **reusable, generic sequences** of `pywarpcl
 
 ### 5. Phase 2 & Beyond: Future Expansion
 
-This architecture is designed for growth. To add new `warp-cli` functionality (e.g., `registration`):
-1.  Add a `RegistrationController` in `pywarpcli/controllers/`.
-2.  Add any necessary data models to `pywarpcli/models.py`.
-3.  Initialize the new controller in `pywarpcli/client.py`.
-
-To add new application functionality (e.g., a "Secure Backup" feature):
+This architecture is designed for growth. To add new application functionality (e.g., a "Secure Backup" feature):
 1.  Create a new `secure_backup.py` module in `app/features/`.
 2.  Implement the feature logic, using the library and workflows.
 3.  Design and implement any required UI components in `app/ui/`.
