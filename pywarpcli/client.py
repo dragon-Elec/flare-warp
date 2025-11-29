@@ -19,6 +19,8 @@ from .types import DualOutput
 if TYPE_CHECKING:
     from .controllers.dns import DnsController
     from .controllers.registration import RegistrationController
+    from .controllers.mode import ModeController
+    from .controllers.settings import SettingsController
 
 
 # Using @final ensures no other class can inherit from WarpClient.
@@ -34,6 +36,8 @@ class WarpClient:
 
     dns: DnsController
     registration: RegistrationController
+    mode: ModeController
+    settings: SettingsController
 
     def __init__(self, warp_cli_path: str = "warp-cli"):
         """
@@ -47,9 +51,13 @@ class WarpClient:
         # Defer controller import to avoid circular dependencies
         from .controllers.dns import DnsController
         from .controllers.registration import RegistrationController
+        from .controllers.mode import ModeController
+        from .controllers.settings import SettingsController
 
         self.dns = DnsController(self)
         self.registration = RegistrationController(self)
+        self.mode = ModeController(self)
+        self.settings = SettingsController(self)
 
     def _run_command(self, command_parts: list[str], expect_json: bool = True) -> str:
         """
@@ -151,25 +159,26 @@ class WarpClient:
         """
         Connects the client.
 
-        Corresponds to `warp-cli connect`. Since this command does not return
-        JSON, the 'model' in the DualOutput will be the raw string output.
-
-        Returns:
-            A DualOutput object where the model is the raw success message.
+        Corresponds to `warp-cli connect`.
         """
-        raw_output = self._run_command(["connect"], expect_json=False)
-        # For non-JSON commands, we simply return the raw output as the "model".
-        return DualOutput(model=raw_output, raw_output=raw_output)
+        raw_output = self._run_command(["connect"])
+        try:
+            json_data = cast(dict[str, Any], json.loads(raw_output))
+            status = json_data.get("status", "Unknown")
+            return DualOutput(model=status, raw_output=raw_output)
+        except json.JSONDecodeError:
+            raise WarpCLIError(f"Failed to parse JSON from 'connect'. Raw: {raw_output}")
 
     def disconnect(self) -> DualOutput[str]:
         """
         Disconnects the client.
 
-        Corresponds to `warp-cli disconnect`. Since this command does not return
-        JSON, the 'model' in the DualOutput will be the raw string output.
-
-        Returns:
-            A DualOutput object where the model is the raw success message.
+        Corresponds to `warp-cli disconnect`.
         """
-        raw_output = self._run_command(["disconnect"], expect_json=False)
-        return DualOutput(model=raw_output, raw_output=raw_output)
+        raw_output = self._run_command(["disconnect"])
+        try:
+            json_data = cast(dict[str, Any], json.loads(raw_output))
+            status = json_data.get("status", "Unknown")
+            return DualOutput(model=status, raw_output=raw_output)
+        except json.JSONDecodeError:
+            raise WarpCLIError(f"Failed to parse JSON from 'disconnect'. Raw: {raw_output}")
